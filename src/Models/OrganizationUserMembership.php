@@ -28,7 +28,7 @@ class OrganizationUserMembership extends TerminusModel implements ContainerAware
      */
     public function delete()
     {
-        return $this->getOrganization()->getWorkflows()->create(
+        return $this->getWorkflows()->create(
             'remove_organization_user_membership',
             ['params' => ['user_id' => $this->getUser()->id,],]
         );
@@ -50,7 +50,7 @@ class OrganizationUserMembership extends TerminusModel implements ContainerAware
      */
     public function setRole($role)
     {
-        return $this->getOrganization()->getWorkflows()->create(
+        return $this->getWorkflows()->create(
             'update_organization_user_membership',
             ['params' => ['user_id' => $this->getUser()->id, 'role' => $role,],]
         );

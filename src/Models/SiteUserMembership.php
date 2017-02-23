@@ -28,7 +28,7 @@ class SiteUserMembership extends TerminusModel implements ContainerAwareInterfac
      **/
     public function delete()
     {
-        return $this->getSite()->getWorkflows()->create(
+        return $this->getWorkflows()->create(
             'remove_site_user_membership',
             ['params' => ['user_id' =>  $this->getUser()->id,],]
         );
@@ -48,7 +48,7 @@ class SiteUserMembership extends TerminusModel implements ContainerAwareInterfac
      */
     public function setRole($role)
     {
-        return $this->getSite()->getWorkflows()->create(
+        return $this->getWorkflows()->create(
             'update_site_user_membership',
             ['params' => ['user_id' =>  $this->getUser()->id, 'role' => $role,],]
         );

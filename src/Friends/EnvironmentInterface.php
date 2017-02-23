@@ -16,6 +16,11 @@ interface EnvironmentInterface
     public function getEnvironment();
 
     /**
+     * @return Workflows
+     */
+    public function getWorkflows();
+
+    /**
      * @param Environment $environment
      */
     public function setEnvironment(Environment $environment);

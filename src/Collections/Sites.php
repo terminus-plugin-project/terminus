@@ -105,52 +105,40 @@ class Sites extends TerminusCollection implements SessionAwareInterface
      * Filters an array of sites by whether the user is an organizational member
      *
      * @param string $regex Non-delimited PHP regex to filter site names by
-     * @return Sites
+     * @return Sites $this
      */
     public function filterByName($regex = '(.*)')
     {
-        $this->models = array_filter(
-            $this->getMembers(),
-            function ($site) use ($regex) {
-                preg_match("~$regex~", $site->get('name'), $matches);
-                return !empty($matches);
-            }
-        );
-        return $this;
+        return $this->filter(function ($site) use ($regex) {
+            preg_match("~$regex~", $site->get('name'), $matches);
+            return !empty($matches);
+        });
     }
 
     /**
      * Filters an array of sites by whether the user is an organizational member
      *
      * @param string $owner_uuid UUID of the owning user to filter by
-     * @return Sites
+     * @return Sites $this
      */
     public function filterByOwner($owner_uuid)
     {
-        $this->models = array_filter(
-            $this->getMembers(),
-            function ($model) use ($owner_uuid) {
-                return ($model->get('owner') == $owner_uuid);
-            }
-        );
-        return $this;
+        return $this->filter(function ($model) use ($owner_uuid) {
+            return ($model->get('owner') == $owner_uuid);
+        });
     }
 
     /**
      * Filters sites list by tag
      *
      * @param string $tag A tag to filter by
-     * @return Sites
+     * @return Sites $this
      */
     public function filterByTag($tag)
     {
-        $this->models = array_filter(
-            $this->getMembers(),
-            function ($site) use ($tag) {
-                return $site->tags->has($tag);
-            }
-        );
-        return $this;
+        return $this->filter(function ($site) use ($tag) {
+            return $site->tags->has($tag);
+        });
     }
 
     /**

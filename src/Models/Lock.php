@@ -34,7 +34,7 @@ class Lock extends TerminusModel implements EnvironmentInterface
      */
     public function enable($params)
     {
-        return $this->getEnvironment()->getWorkflows()->create('lock_environment', compact('params'));
+        return $this->getWorkflows()->create('lock_environment', compact('params'));
     }
 
     /**
@@ -66,6 +66,6 @@ class Lock extends TerminusModel implements EnvironmentInterface
      */
     public function disable()
     {
-        return $this->getEnvironment()->getWorkflows()->create('unlock_environment');
+        return $this->getWorkflows()->create('unlock_environment');
     }
 }

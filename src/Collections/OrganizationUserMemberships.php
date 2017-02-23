@@ -32,7 +32,7 @@ class OrganizationUserMemberships extends OrganizationOwnedCollection
      */
     public function create($uuid, $role)
     {
-        return $this->getOrganization()->getWorkflows()->create(
+        return $this->getWorkflows()->create(
             'add_organization_user_membership',
             ['params' => ['user_email' => $uuid, 'role' => $role,],]
         );

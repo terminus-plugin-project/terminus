@@ -2,18 +2,16 @@
 
 namespace Pantheon\Terminus\Collections;
 
-use Pantheon\Terminus\Models\Environment;
+use Pantheon\Terminus\Friends\EnvironmentInterface;
+use Pantheon\Terminus\Friends\EnvironmentTrait;
 
 /**
  * Class EnvironmentOwnedCollection
  * @package Pantheon\Terminus\Collections
  */
-abstract class EnvironmentOwnedCollection extends TerminusCollection
+abstract class EnvironmentOwnedCollection extends TerminusCollection implements EnvironmentInterface
 {
-    /**
-     * @var Environment
-     */
-    private $environment;
+    use EnvironmentTrait;
 
     /**
      * @inheritdoc
@@ -22,22 +20,6 @@ abstract class EnvironmentOwnedCollection extends TerminusCollection
     {
         parent::__construct($options);
         $this->setEnvironment($options['environment']);
-    }
-
-    /**
-     * @return Environment
-     */
-    public function getEnvironment()
-    {
-        return $this->environment;
-    }
-
-    /**
-     * @param Environment $environment
-     */
-    public function setEnvironment($environment)
-    {
-        $this->environment = $environment;
     }
 
     /**

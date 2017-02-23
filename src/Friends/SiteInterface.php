@@ -16,6 +16,11 @@ interface SiteInterface
     public function getSite();
 
     /**
+     * @return Workflows
+     */
+    public function getWorkflows();
+
+    /**
      * @param Site $site
      */
     public function setSite(Site $site);

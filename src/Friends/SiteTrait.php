@@ -41,4 +41,12 @@ trait SiteTrait
     {
         $this->site = $site;
     }
+
+    /**
+     * @return Workflows
+     */
+    public function getWorkflows()
+    {
+        return $this->getSite()->getWorkflows();
+    }
 }

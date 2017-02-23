@@ -27,6 +27,14 @@ trait OrganizationTrait
     }
 
     /**
+     * @return Workflows
+     */
+    public function getWorkflows()
+    {
+        return $this->getOrganization()->getWorkflows();
+    }
+
+    /**
      * @param Organization $organization
      */
     public function setOrganization(Organization $organization)

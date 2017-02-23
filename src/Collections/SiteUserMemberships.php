@@ -32,7 +32,7 @@ class SiteUserMemberships extends SiteOwnedCollection
      **/
     public function create($email, $role)
     {
-        return $this->getSite()->getWorkflows()->create(
+        return $this->getWorkflows()->create(
             'add_site_user_membership',
             ['params' => ['user_email' => $email, 'role' => $role,],]
         );

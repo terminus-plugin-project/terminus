@@ -42,7 +42,7 @@ class OrganizationSiteMembership extends TerminusModel implements ContainerAware
      */
     public function delete()
     {
-        return $this->getOrganization()->getWorkflows()->create(
+        return $this->getWorkflows()->create(
             'remove_organization_site_membership',
             ['params' => ['site_id' => $this->getSite()->id,],]
         );

@@ -16,6 +16,11 @@ interface OrganizationInterface
     public function getOrganization();
 
     /**
+     * @return Workflows
+     */
+    public function getWorkflows();
+
+    /**
      * @param Organization $organization
      */
     public function setOrganization(Organization $organization);

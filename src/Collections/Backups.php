@@ -63,7 +63,7 @@ class Backups extends EnvironmentOwnedCollection
         }
         $params['ttl'] = ceil((integer)$options['keep-for'] * 86400);
 
-        return $this->getEnvironment()->getWorkflows()->create('do_export', compact('params'));
+        return $this->getWorkflows()->create('do_export', compact('params'));
     }
 
     /**

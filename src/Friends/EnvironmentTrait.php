@@ -27,6 +27,14 @@ trait EnvironmentTrait
     }
 
     /**
+     * @return Workflows
+     */
+    public function getWorkflows()
+    {
+        return $this->getEnvironment()->getWorkflows();
+    }
+
+    /**
      * @param Environment $environment
      */
     public function setEnvironment(Environment $environment)

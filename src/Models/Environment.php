@@ -222,7 +222,7 @@ class Environment extends TerminusModel implements ConfigAwareInterface, Contain
         );
 
         // Can only Use Git on dev/multidev environments
-        if (!in_array($this->id, ['test', 'live',])) {
+        if ($this->isDevelopment()) {
             $git_info = $this->gitConnectionInfo();
             $info = array_merge(
                 array_combine(
@@ -642,6 +642,16 @@ class Environment extends TerminusModel implements ConfigAwareInterface, Contain
     }
 
     /**
+     * Is this branch a development environment (i.e. is neither test nor live)?
+     *
+     * @return boolean True if ths environment is a development environment
+     */
+    public function isDevelopment()
+    {
+        return !in_array($this->id, ['test', 'live',]);
+    }
+
+    /**
      * Have the environment's bindings have been initialized?
      *
      * @return bool True if environment has been instantiated
@@ -649,7 +659,7 @@ class Environment extends TerminusModel implements ConfigAwareInterface, Contain
     public function isInitialized()
     {
         // Only test or live environments can be uninitialized
-        if (!in_array($this->id, ['test', 'live',])) {
+        if ($this->isDevelopment()) {
             return true;
         }
         // One can determine whether an environment has been initialized
@@ -665,7 +675,7 @@ class Environment extends TerminusModel implements ConfigAwareInterface, Contain
      */
     public function isMultidev()
     {
-        return !in_array($this->id, ['dev', 'test', 'live']);
+        return !in_array($this->id, ['dev', 'test', 'live',]);
     }
 
     /**

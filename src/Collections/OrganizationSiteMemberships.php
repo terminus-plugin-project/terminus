@@ -31,7 +31,7 @@ class OrganizationSiteMemberships extends OrganizationOwnedCollection
      */
     public function create($site)
     {
-        return $this->getOrganization()->getWorkflows()->create(
+        return $this->getWorkflows()->create(
             'add_organization_site_membership',
             ['params' => ['site_id' => $site->id, 'role' => 'team_member',],]
         );

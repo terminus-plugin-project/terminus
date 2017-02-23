@@ -41,4 +41,19 @@ abstract class UpdatesCommand extends TerminusCommand implements SiteAwareInterf
     {
         return (array)$this->getUpstreamUpdates($env)->update_log;
     }
+
+    /**
+     * Return the upstream for the given site
+     *
+     * @param Site $site
+     * @return object The upstream information
+     * @throws TerminusException
+     */
+    protected function getUpstreamUpdateTargets($env)
+    {
+        if (empty($upstream = $env->getUpstreamStatus()->getUpdates())) {
+            throw new TerminusException('There was a problem checking your upstream status. Please try again.');
+        }
+        return $upstream;
+    }
 }

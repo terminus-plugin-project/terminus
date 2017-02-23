@@ -29,7 +29,7 @@ class Environments extends SiteOwnedCollection
      */
     public function create($to_env_id, Environment $from_env)
     {
-        $workflow = $this->getSite()->getWorkflows()->create(
+        $workflow = $this->getWorkflows()->create(
             'create_cloud_development_environment',
             [
                 'params' => [
@@ -46,6 +46,30 @@ class Environments extends SiteOwnedCollection
             ]
         );
         return $workflow;
+    }
+
+    /**
+     * Filters the environment list to only include development environments
+     *
+     * @return Environment $this
+     */
+    public function filterForDevelopment()
+    {
+        return $this->filter(function ($env) {
+            return $env->isDevelopment();
+        });
+    }
+
+    /**
+     * Filters the environment list to only include multidev environments
+     *
+     * @return Environment $this
+     */
+    public function filterForMultidev()
+    {
+        return $this->filter(function ($env) {
+            return $env->isMultidev();
+        });
     }
 
     /**
@@ -72,13 +96,7 @@ class Environments extends SiteOwnedCollection
      */
     public function multidev()
     {
-        $environments = array_filter(
-            $this->getMembers(),
-            function ($environment) {
-                return $environment->isMultidev();
-            }
-        );
-        return $environments;
+        return $this->filterForMultidev()->all();
     }
 
     /**

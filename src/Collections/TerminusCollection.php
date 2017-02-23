@@ -23,7 +23,7 @@ abstract class TerminusCollection implements ContainerAwareInterface, RequestAwa
      */
     protected $collected_class = TerminusModel::class;
     /**
-     * @var TerminusModel[]
+     * @var TerminusModel[]|null The value is null if the collection has not been fetched
      */
     protected $models = null;
     /**
@@ -106,10 +106,22 @@ abstract class TerminusCollection implements ContainerAwareInterface, RequestAwa
     }
 
     /**
-     * Retrieves the model of the given ID
+     * Filters the models by the provided function
      *
-     * @param string $id ID of desired model instance
-     * @return TerminusModel $this->models[$id]
+     * @param callable $function
+     * @return $this
+     */
+    public function filter(callable $function)
+    {
+        $this->models = array_filter($this->getMembers(), $function);
+        return $this;
+    }
+
+    /**
+     * Retrieves the model of the provided identifier
+     *
+     * @param string $id Identifier of desired model instance
+     * @return TerminusModel
      * @throws TerminusNotFoundException
      */
     public function get($id)

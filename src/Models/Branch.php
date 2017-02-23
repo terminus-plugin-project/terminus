@@ -22,7 +22,7 @@ class Branch extends TerminusModel implements SiteInterface
      */
     public function delete()
     {
-        return $this->getSite()->getWorkflows()->create(
+        return $this->getWorkflows()->create(
             'delete_environment_branch',
             ['params' => ['environment_id' => $this->id,],]
         );

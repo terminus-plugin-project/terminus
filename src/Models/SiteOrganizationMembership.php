@@ -25,7 +25,7 @@ class SiteOrganizationMembership extends TerminusModel implements ContainerAware
      **/
     public function delete()
     {
-        return $this->getSite()->getWorkflows()->create(
+        return $this->getWorkflows()->create(
             'remove_site_organization_membership',
             ['params' => ['organization_id' => $this->id,],]
         );
@@ -56,7 +56,7 @@ class SiteOrganizationMembership extends TerminusModel implements ContainerAware
      */
     public function setRole($role)
     {
-        return $this->getSite()->getWorkflows()->create(
+        return $this->getWorkflows()->create(
             'update_site_organization_membership',
             ['params' => ['organization_id' => $this->id, 'role' => $role,],]
         );

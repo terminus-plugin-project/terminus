@@ -26,7 +26,7 @@ class ViewCommand extends TerminusCommand implements SiteAwareInterface, Contain
      * @command dashboard:view
      * @aliases dashboard
      *
-     * @option string $site_env Site & environment in the format `site-name.env`
+     * @option string $site_env Site & environment to access as `$site` and (optional) `$env`
      * @option boolean $print Print URL only
      *
      * @return string|null
