@@ -8,6 +8,7 @@ use Pantheon\Terminus\Collections\Backups;
 use Pantheon\Terminus\Collections\Bindings;
 use Pantheon\Terminus\Collections\Commits;
 use Pantheon\Terminus\Collections\Domains;
+use Pantheon\Terminus\Collections\Environments;
 use Pantheon\Terminus\Collections\Loadbalancers;
 use Pantheon\Terminus\Collections\Workflows;
 use Pantheon\Terminus\Helpers\LocalMachineHelper;
@@ -67,6 +68,14 @@ class Environment extends TerminusModel implements ConfigAwareInterface, Contain
     private $workflows;
 
     /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return "{$this->getSite()->getName()}.{$this->id}";
+    }
+
+    /**
      * Apply upstream updates
      *
      * @param boolean $updatedb True to run update.php
@@ -75,7 +84,7 @@ class Environment extends TerminusModel implements ConfigAwareInterface, Contain
      */
     public function applyUpstreamUpdates($updatedb = true, $xoption = false)
     {
-        $params = ['updatedb' => $updatedb, 'xoption' => $xoption];
+        $params = ['updatedb' => $updatedb, 'xoption' => $xoption,];
         return $this->getWorkflows()->create('apply_upstream_updates', compact('params'));
     }
 
@@ -251,7 +260,7 @@ class Environment extends TerminusModel implements ConfigAwareInterface, Contain
     /**
      * Counts the number of deployable commits
      *
-     * @return int
+     * @return integer
      */
     public function countDeployableCommits()
     {
@@ -480,7 +489,7 @@ class Environment extends TerminusModel implements ConfigAwareInterface, Contain
     public function getLock()
     {
         if (empty($this->lock)) {
-            $this->lock = $this->getContainer()->get(Lock::class, [$this->get('lock'), ['environment' => $this],]);
+            $this->lock = $this->getContainer()->get(Lock::class, [$this->get('lock'), ['environment' => $this,],]);
         }
         return $this->lock;
     }
@@ -581,6 +590,18 @@ class Environment extends TerminusModel implements ConfigAwareInterface, Contain
     }
 
     /**
+     * Determines whether any upstream updates available
+     *
+     * @return boolean
+     */
+    public function hasUpstreamUpdates()
+    {
+        $updates = $this->getUpstreamStatus()->getUpdates();
+        return property_exists($updates, 'update_log') && !empty((array)$updates->update_log);
+    }
+
+
+    /**
      * Imports a database archive
      *
      * @param string $url URL to import data from
@@ -675,7 +696,7 @@ class Environment extends TerminusModel implements ConfigAwareInterface, Contain
      */
     public function isMultidev()
     {
-        return !in_array($this->id, ['dev', 'test', 'live',]);
+        return !in_array($this->id, Environments::$default_environments);
     }
 
     /**

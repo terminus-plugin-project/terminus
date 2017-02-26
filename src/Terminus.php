@@ -23,6 +23,7 @@ use Pantheon\Terminus\Session\SessionAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Update\LatestRelease;
 use Pantheon\Terminus\Update\UpdateChecker;
+use Pantheon\Terminus\UpstreamUpdate\WorkflowQueue;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Robo\Common\ConfigAwareTrait;
@@ -218,6 +219,9 @@ class Terminus implements ConfigAwareInterface, ContainerAwareInterface, LoggerA
         // Update checker
         $container->add(LatestRelease::class);
         $container->add(UpdateChecker::class);
+
+        // Workflow queue
+        $container->add(WorkflowQueue::class);
 
         $container->share('sites', Sites::class);
         $container->inflector(SiteAwareInterface::class)

@@ -97,6 +97,7 @@ class Sites extends TerminusCollection implements SessionAwareInterface
             }
         }
         $this->models = $merged_sites;
+        $this->has_been_fetched = true;
 
         return $this;
     }
@@ -156,7 +157,7 @@ class Sites extends TerminusCollection implements SessionAwareInterface
     {
         $site = null;
 
-        if ($this->models === null) {
+        if (!$this->has_been_fetched) {
             // If the full model set hasn't been fetched then request the item individually from the API
             // This can be a lot faster when there are a lot of items.
             try {

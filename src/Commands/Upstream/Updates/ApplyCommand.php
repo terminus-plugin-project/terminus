@@ -2,14 +2,18 @@
 
 namespace Pantheon\Terminus\Commands\Upstream\Updates;
 
+use League\Container\ContainerAwareInterface;
+use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\UpstreamUpdate\WorkflowQueue;
 
 /**
  * Class ApplyCommand
  * @package Pantheon\Terminus\Commands\Upstream\Updates
  */
-class ApplyCommand extends UpdatesCommand
+class ApplyCommand extends UpdatesCommand implements ContainerAwareInterface
 {
+    use ContainerAwareTrait;
 
     /**
      * Applies upstream updates to a site's development environment.
@@ -38,28 +42,27 @@ class ApplyCommand extends UpdatesCommand
     ])
     {
         $targets = $this->acquireTargets($site_env, isset($options['all']) ? $options['all'] : false);
-        die(print_r($targets,true));
+        $updatedb = isset($options['updatedb']) ? $options['updatedb'] : false;
+        $accept_upstream = isset($options['accept-upstream']) ? $options['accept-upstream'] : false;
+        $workflow_queue = $this->getContainer()->get(WorkflowQueue::class);
 
-        $updates = $this->getUpstreamUpdatesLog($env);
-        $count = count($updates);
-        if ($count) {
-            $this->log()->notice(
-                'Applying {count} upstream update(s) to the {env} environment of {site_id}...',
-                ['count' => $count, 'env' => $env->id, 'site_id' => $site->getName(),]
-            );
-
-            $workflow = $env->applyUpstreamUpdates(
-                isset($options['updatedb']) ? $options['updatedb'] : false,
-                isset($options['accept-upstream']) ? $options['accept-upstream'] : false
-            );
-
-            while (!$workflow->checkProgress()) {
-                // @TODO: Add Symfony progress bar to indicate that something is happening.
-            }
-            $this->log()->notice($workflow->getMessage());
-        } else {
-            $this->log()->warning('There are no available updates for this site.');
+        if (empty($targets)) {
+            $this->log()->notice('None of the targeted environments have updates to apply.');
+            return;
         }
+
+        foreach ($targets as $env) {
+            $this->log()->info(
+                'Applying available updates to the {env} environment of {site}.',
+                ['env' => $env->id, 'site' => $env->getSite()->getName(),]
+            );
+            $workflow_queue->push($env->applyUpstreamUpdates($updatedb, $accept_upstream));
+        }
+
+        while ($workflow_queue->inProgress()) {
+            // @TODO: Add Symfony progress bar to indicate that something is happening.
+        }
+        $this->log()->info($workflow_queue);
     }
 
     /**
@@ -69,16 +72,20 @@ class ApplyCommand extends UpdatesCommand
      */
     protected function acquireTargets($site_env, $all)
     {
-        $targets = [];
+        $envs = [];
         list($site, $env) = $this->getOptionalSiteEnv($site_env);
         if (is_null($site)) {
             if ($all) {
-                foreach ($this->sites()->all() as $site) {
-                    $targets = array_merge($targets, $site->getEnvironments()->filterForDevelopment()->ids());
+                $this->log()->notice('This operation may take a long time to run.');
+                $this->log()->info('Retrieving all sites.');
+                $sites = $this->sites->all();
+                $this->log()->info('{count} sites were found.', ['count' => count($sites),]);
+                foreach ($sites as $site) {
+                    $envs = array_merge($envs, $this->getAllDevEnvsForSite($site));
                 }
             }
         } else if (is_null($env)) {
-            $targets = $site->getEnvironments()->filterForDevelopment()->ids();
+            $envs = $this->getAllDevEnvsForSite($site);
         } else {
             if (!$env->isDevelopment()) {
                 throw new TerminusException(
@@ -86,8 +93,18 @@ class ApplyCommand extends UpdatesCommand
                     ['env' => $env->id,]
                 );
             }
-            $targets[] = $env->id;
+            $envs[$env->id] = $env;
         }
-        return $targets;
+        return $envs;
+    }
+
+    /**
+     * @param Site $site
+     * @return Environments[]
+     */
+    private function getAllDevEnvsForSite($site)
+    {
+        $this->log()->info('Retrieving all development environments of {site}.', ['site' => $site->getName(),]);
+        return $site->getEnvironments()->filterForUpstreamUpdates()->all();
     }
 }

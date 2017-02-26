@@ -4,7 +4,7 @@ namespace Pantheon\Terminus\Models;
 
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
-use Pantheon\Terminus\Friends\SiteInterface;
+use Pantheon\Terminus\Friends\SiteJoinInterface;
 use Pantheon\Terminus\Friends\SiteJoinTrait;
 use Pantheon\Terminus\Friends\UserInterface;
 use Pantheon\Terminus\Friends\UserTrait;
@@ -13,7 +13,7 @@ use Pantheon\Terminus\Friends\UserTrait;
  * Class UserSiteMembership
  * @package Pantheon\Terminus\Models
  */
-class UserSiteMembership extends TerminusModel implements ContainerAwareInterface, SiteInterface, UserInterface
+class UserSiteMembership extends TerminusModel implements ContainerAwareInterface, SiteJoinInterface, UserInterface
 {
     use ContainerAwareTrait;
     use SiteJoinTrait;

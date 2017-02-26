@@ -23,9 +23,13 @@ abstract class TerminusCollection implements ContainerAwareInterface, RequestAwa
      */
     protected $collected_class = TerminusModel::class;
     /**
-     * @var TerminusModel[]|null The value is null if the collection has not been fetched
+     * @var boolean
      */
-    protected $models = null;
+    protected $has_been_fetched = false;
+    /**
+     * @var TerminusModel[]
+     */
+    protected $models = [];
     /**
      * @var boolean
      */
@@ -126,7 +130,8 @@ abstract class TerminusCollection implements ContainerAwareInterface, RequestAwa
      */
     public function get($id)
     {
-        foreach ($this->getMembers() as $member) {
+        $models = $this->getMembers();
+        foreach ($models as $member) {
             if (in_array($id, $member->getReferences())) {
                 return $member;
             }
@@ -149,11 +154,11 @@ abstract class TerminusCollection implements ContainerAwareInterface, RequestAwa
      */
     public function has($id)
     {
-        return !is_null($models = $this->getMembers()) && array_key_exists($id, $models);
+        return array_key_exists($id, $this->getMembers());
     }
 
     /**
-     * List Model IDs
+     * Returns an array of the models' IDs
      *
      * @return string[] Array of all model IDs
      */
@@ -241,9 +246,9 @@ abstract class TerminusCollection implements ContainerAwareInterface, RequestAwa
      */
     protected function getMembers()
     {
-        if (is_null($this->models)) {
-            $this->models = [];
+        if (!$this->has_been_fetched) {
             $this->fetch();
+            $this->has_been_fetched = true;
         }
         return $this->models;
     }

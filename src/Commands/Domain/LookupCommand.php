@@ -3,6 +3,7 @@
 namespace Pantheon\Terminus\Commands\Domain;
 
 use Consolidation\OutputFormatters\StructuredData\PropertyList;
+use Pantheon\Terminus\Collections\Environments;
 use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
@@ -40,9 +41,8 @@ class LookupCommand extends TerminusCommand implements SiteAwareInterface
     {
         $this->log()->notice('This operation may take a long time to run.');
         $sites = $this->sites()->all();
-        $environments = ['dev', 'test', 'live',];
         foreach ($sites as $site) {
-            foreach ($environments as $env_name) {
+            foreach (Environments::$default_environments as $env_name) {
                 if ($site->getEnvironments()->get($env_name)->getDomains()->has($domain)) {
                     $env = ['site_id' => $site->id, 'site_name' => $site->get('name'), 'env_id' => $env_name,];
                     break 2;

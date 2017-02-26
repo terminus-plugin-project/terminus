@@ -10,6 +10,7 @@ use Pantheon\Terminus\Models\Environment;
  */
 class Environments extends SiteOwnedCollection
 {
+    public static $default_environments = ['dev', 'test', 'live',];
     public static $pretty_name = 'environments';
     /**
      * @var string
@@ -73,20 +74,15 @@ class Environments extends SiteOwnedCollection
     }
 
     /**
-     * List Environment IDs, with Dev/Test/Live first
+     * Filters the environment list to only include environments with upstream updates
      *
-     * @return string[] $ids
+     * @return Environment $this
      */
-    public function ids()
+    public function filterForUpstreamUpdates()
     {
-        $ids = array_keys($this->getMembers());
-
-        //Reorder environments to put dev/test/live first
-        $default_ids = ['dev', 'test', 'live'];
-        $multidev_ids = array_diff($ids, $default_ids);
-        $ids = array_merge($default_ids, $multidev_ids);
-
-        return $ids;
+        return $this->filterForDevelopment()->filter(function ($env) {
+            return $env->hasUpstreamUpdates();
+        });
     }
 
     /**
@@ -114,5 +110,28 @@ class Environments extends SiteOwnedCollection
             }
         }
         return $models;
+    }
+
+    /**
+     * Retrieves all members of this collection and orders them with Dev/Test/Live first
+     *
+     * @return TerminusModel[]
+     */
+    protected function getMembers()
+    {
+        if (!$this->has_been_fetched) {
+            $unordered_models = parent::getMembers();
+            $multidev_ids = array_diff(array_keys($unordered_models), self::$default_environments);
+            $ordered_ids = self::$default_environments + $multidev_ids;
+            sort($ordered_ids);
+
+            $this->models = [];
+            foreach ($ordered_ids as $id) {
+                if (isset($unordered_models[$id])) {
+                    $this->models[$id] = $unordered_models[$id];
+                }
+            }
+        }
+        return $this->models;
     }
 }
